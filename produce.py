@@ -5,11 +5,11 @@ from ipaddress import IPv4Network, IPv6Network
 import math
 
 parser = argparse.ArgumentParser(description='Generate non-China routes for BIRD.')
-parser.add_argument('--exclude', metavar='CIDR', type=str, nargs='*'，
+parser.add_argument('--exclude', metavar='CIDR', type=str, nargs='*',
                     help='IPv4 ranges to exclude in CIDR format')
-parser.add_argument('--next', default="utun", metavar = "INTERFACE OR IP"，
+parser.add_argument('--next', default="wg0", metavar = "INTERFACE OR IP",
                     help='next hop for where non-China IP address, this is usually the tunnel interface')
-parser.add_argument('--ipv4-list', choices=['apnic'， 'ipip'], default=['apnic'， 'ipip'], nargs='*'，
+parser.add_argument('--ipv4-list', choices=['apnic', 'ipip'], default=['apnic', 'ipip'], nargs='*',
                     help='IPv4 lists to use when subtracting China based IP, multiple lists can be used at the same time (default: apnic ipip)')
 
 args = parser.parse_args()
@@ -25,12 +25,12 @@ class Node:
         return "<Node %s>" % self.cidr
 
 def dump_tree(lst, ident=0):
-    for n 在 lst:
+    for n in lst:
         print("+" * ident + str(n))
         dump_tree(n.child, ident + 1)
 
 def dump_bird(lst, f):
-    for n 在 lst:
+    for n in lst:
         if n.dead:
             continue
 
@@ -41,29 +41,29 @@ def dump_bird(lst, f):
             f.write('route %s via "%s";\n' % (n.cidr, args.next))
 
 RESERVED = [
-    IPv4Network('0.0.0.0/8')，
-    IPv4Network('10.0.0.0/8')，
-    IPv4Network('127.0.0.0/8')，
-    IPv4Network('169.254.0.0/16')，
-    IPv4Network('172.16.0.0/12')，
-    IPv4Network('192.0.0.0/29')，
-    IPv4Network('192.0.0.170/31')，
-    IPv4Network('192.0.2.0/24')，
-    IPv4Network('192.168.0.0/16')，
-    IPv4Network('198.18.0.0/15')，
-    IPv4Network('198.51.100.0/24')，
-    IPv4Network('203.0.113.0/24')，
-    IPv4Network('240.0.0.0/4')，
-    IPv4Network('255.255.255.255/32')，
-    IPv4Network('169.254.0.0/16')，
-    IPv4Network('127.0.0.0/8')，
-    IPv4Network('224.0.0.0/4')，
-    IPv4Network('100.64.0.0/10')，
+    IPv4Network('0.0.0.0/8'),
+    IPv4Network('10.0.0.0/8'),
+    IPv4Network('127.0.0.0/8'),
+    IPv4Network('169.254.0.0/16'),
+    IPv4Network('172.16.0.0/12'),
+    IPv4Network('192.0.0.0/29'),
+    IPv4Network('192.0.0.170/31'),
+    IPv4Network('192.0.2.0/24'),
+    IPv4Network('192.168.0.0/16'),
+    IPv4Network('198.18.0.0/15'),
+    IPv4Network('198.51.100.0/24'),
+    IPv4Network('203.0.113.0/24'),
+    IPv4Network('240.0.0.0/4'),
+    IPv4Network('255.255.255.255/32'),
+    IPv4Network('169.254.0.0/16'),
+    IPv4Network('127.0.0.0/8'),
+    IPv4Network('224.0.0.0/4'),
+    IPv4Network('100.64.0.0/10'),
 ]
 RESERVED_V6 = []
 if args.exclude:
-    for e 在 args.exclude:
-        if ":" 在 e:
+    for e in args.exclude:
+        if ":" in e:
             RESERVED_V6.append(IPv6Network(e))
 
         else:
@@ -72,8 +72,8 @@ if args.exclude:
 IPV6_UNICAST = IPv6Network('2000::/3')
 
 def subtract_cidr(sub_from, sub_by):
-    for cidr_to_sub 在 sub_by:
-        for n 在 sub_from:
+    for cidr_to_sub in sub_by:
+        for n in sub_from:
             if n.cidr == cidr_to_sub:
                 n.dead = True
                 break
