@@ -1,9 +1,8 @@
 name: Delete All Releases
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 5 * * *'
 
 jobs:
   delete_all_releases:
