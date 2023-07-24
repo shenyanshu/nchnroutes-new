@@ -23,7 +23,7 @@ jobs:
       - name: Get release ID
         id: get_release_id
         run: |
-          echo "::set-output name=release_id::${{ github.event.release.id }}"
+          echo "run: echo "::set-output name={name}::{value}""
 
       - name: List release assets
         id: list_release_assets
