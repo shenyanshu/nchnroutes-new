@@ -25,14 +25,14 @@ jobs:
         run: |
           echo "::set-output name=release_id::$(curl -s -H \"Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}\" https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.0.0 | jq '.id')"
 
-      - name: Delete all files in release
+      - name: Delete all release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_ID: ${{ steps.get_release_id.outputs.release_id }}
         run: |
-          for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets | jq -r '.[].id'); do
+          for release_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].id'); do
+          for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$release_id/assets | jq -r '.[].id'); do
             curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
-          done
+         done  
 
       - name: Create release
         id: create_release
