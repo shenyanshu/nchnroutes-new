@@ -5,9 +5,9 @@ China and generates result in BIRD static route format
 
 Both IPv4 and IPv6 are supported.
 
-As of Jul 2021, the size of generated table is roughly 11000-12000 entries for IPv4 (depends on the IP list used) and 14000 for
+As of 2021年7月, the size of generated table is roughly 11000-12000 entries for IPv4 (depends on the IP list used) and 14000 for
 IPv6. On a Raspberry Pi 4 with BIRD, full loading and convergence over OSPF with RouterOS running
-on Mikrotik hEX takes around 5 seconds.
+on Mikrotik hEX takes around 5 秒之前.
 
 For practical usage, check out my blog post (available in Chinese only):
 https://idndx.com/use-routeros-ospf-and-raspberry-pi-to-create-split-routing-for-different-ip-ranges/
@@ -51,3 +51,7 @@ sudo crontab -e
 and add `0 0 * * 0 make -C /path/to/nchnroutes` to the file.
 
 This will re generate the table every Sunday at midnight and reload BIRD afterwards.
+
+# 注意
+以上是原代码作者文件，如果你有特别要求，请自行生成相关路由表
+无特殊要求，可直接下载仓库中路由表。
