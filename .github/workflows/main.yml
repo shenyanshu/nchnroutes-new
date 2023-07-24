@@ -36,8 +36,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: $(date +'%Y%m%d')
-          release_name: $(date +'%Y%m%d')
+          tag_name: v1.0.0
+          release_name: k v1.0.0
           draft: false
           prerelease: false
 
