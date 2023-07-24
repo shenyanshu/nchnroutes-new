@@ -28,9 +28,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}
-          tag: v1.0.0 # 修改为你的Release标签
-          filename: routes4.conf
-
+          tag: v1.0.0 
+          
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
