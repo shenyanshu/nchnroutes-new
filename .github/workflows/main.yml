@@ -21,24 +21,13 @@ jobs:
       - name: Build project
         run: make
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.0.0
-          release_name: Release v1.0.0
-          draft: false
-          prerelease: false
-
       - name: Upload release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./path/to/generated/file
-          asset_name: generated-file.txt
-          asset_content_type: text/plain
+          asset_path: ./router4.conf
+          asset_name: router4.conf
+          asset_content_type: text/plain      
