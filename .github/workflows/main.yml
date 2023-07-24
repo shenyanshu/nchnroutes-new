@@ -17,17 +17,24 @@ jobs:
         with:
           python-version: 3.x
 
+      - name: Wait 2 minutes
+        run: sleep 2m
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+
       - name: Build router configuration file
         run: make
 
-      - name: Delete all release assets
+      - name: Delete release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ github.event.release.id }}
         run: |
-          for release_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].id'); do
-            for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$release_id/assets | jq -r '.[].id'); do
-              curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
-            done
+          for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets" | jq -r '.[].id'); do
+            curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
           done
 
       - name: Create new release
@@ -36,8 +43,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0
-          release_name: Release v1.0.0
+          tag_name: v1.0.0-$(date '+%Y-%m-%d')
+          release_name: Release v1.0.0-$(date '+%Y-%m-%d')
           draft: false
           prerelease: false
 
@@ -50,4 +57,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./routes4.conf
           asset_name: routes4.conf
-          asset_content_type: text/plain
+          asset_content_type: text/plain          
