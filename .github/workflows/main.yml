@@ -16,10 +16,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-
-      - name: Build router configuration file
-        run: make
-
+          
       - name: Get release ID
         id: get_release_id
         run: |
@@ -29,8 +26,10 @@ jobs:
         uses: JasonEtco/delete-release-assets@v0.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release_id: ${{ steps.get_release_id.outputs.release_id }}          
-
+          release_id: ${{ steps.get_release_id.outputs.release_id }}    
+      - name: Build router configuration file
+        run: make
+      
       - name: Create new release
         id: create_release
         uses: actions/create-release@v1
