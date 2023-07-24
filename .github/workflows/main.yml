@@ -17,14 +17,6 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Wait 2 minutes
-        run: sleep 2m
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make
-
       - name: Build router configuration file
         run: make
 
