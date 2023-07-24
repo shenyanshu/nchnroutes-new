@@ -19,12 +19,7 @@ jobs:
 
       - name: Build router configuration file
         run: make
-
-      - name: Get release ID
-        id: get_release_id
-        run: |
-          echo "::set-output name=release_id::$(curl -s -H \"Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}\" https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.0.0 | jq '.id')"
-
+        
       - name: Delete all release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
