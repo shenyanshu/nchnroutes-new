@@ -10,26 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Setup Python
+      - name: Set up Python 3.x
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
 
-      - name: Build project
+      - name: Build router configuration file
         run: make
-        
-      - name: Delete existing file from release
-        id: delete_existing_file
-        uses: svenstaro/upload-release-action@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.repository }}
-          tag: v1.0.0 
-          
+
+      - name: Get release ID
+        id: get_release_id
+        run: |
+          echo "::set-output name=release_id::$(curl -s -H \"Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}\" https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.0.0 | jq '.id')"
+
+      - name: Delete all files in release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ steps.get_release_id.outputs.release_id }}
+        run: |
+          for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets | jq -r '.[].id'); do
+            curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
+          done
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -42,12 +46,12 @@ jobs:
           prerelease: false
 
       - name: Upload release asset
-        id: upload-release-asset
+        id: upload_release_asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./routes4.conf
-          asset_name: routes4.conf
+          asset_path: ./router4.conf
+          asset_name: router4.conf
           asset_content_type: text/plain
