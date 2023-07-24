@@ -26,7 +26,7 @@ jobs:
       - name: Generate routes4.conf
         run: |
           # Generate routes4.conf file using make command
-          make routes4.conf
+          make
 
       - name: Create Release
         id: create_release
