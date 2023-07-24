@@ -9,14 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python 3.x
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-          
+    steps:         
       - name: Get release ID
         id: get_release_id
         run: |
@@ -26,7 +19,8 @@ jobs:
         uses: JasonEtco/delete-release-assets@v0.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release_id: ${{ steps.get_release_id.outputs.release_id }}    
+          release_id: ${{ steps.get_release_id.outputs.release_id }}   
+          
       - name: Build router configuration file
         run: make
       
