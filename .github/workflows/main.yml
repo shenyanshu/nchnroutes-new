@@ -20,6 +20,16 @@ jobs:
 
       - name: Build project
         run: make
+        
+      - name: Delete existing file from release
+        id: delete_existing_file
+        uses: svenstaro/upload-release-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          tag: v1.0.0 # 修改为你的Release标签
+          filename: routes4.conf
 
       - name: Create release
         id: create_release
@@ -27,8 +37,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0
-          release_name: Release v1.0.0
+          tag_name: v1.0.0-$(date '+%Y-%m-%d')
+          release_name: Release v1.0.0-$(date '+%Y-%m-%d')
           draft: false
           prerelease: false
 
