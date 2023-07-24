@@ -54,4 +54,5 @@ This will re generate the table every Sunday at midnight and reload BIRD afterwa
 
 # 注意
 以上是原代码作者文件，如果你有特别要求，请自行生成相关路由表
-无特殊要求，可直接下载仓库中路由表。
+# 本人标注
+无特殊要求，可直接下载发行版中路由表。
