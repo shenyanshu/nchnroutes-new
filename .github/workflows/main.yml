@@ -20,14 +20,16 @@ jobs:
       - name: Build router configuration file
         run: make
 
-      - name: Delete release assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_ID: ${{ github.event.release.id }}
+      - name: Get release ID
+        id: get_release_id
         run: |
-          for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets" | jq -r '.[].id'); do
-            curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
-          done
+          echo "::set-output name=release_id::${{ github.event.release.id }}"
+
+      - name: Delete release assets
+        uses: JasonEtco/delete-release-assets@v0.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release_id: ${{ steps.get_release_id.outputs.release_id }}          
 
       - name: Create new release
         id: create_release
