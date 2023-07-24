@@ -9,21 +9,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:         
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Build router configuration file
+        run: make
+
       - name: Get release ID
         id: get_release_id
         run: |
           echo "::set-output name=release_id::${{ github.event.release.id }}"
 
+      - name: List release assets
+        id: list_release_assets
+        run: |
+          curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.get_release_id.outputs.release_id }}/assets" | jq -r '.[].id' > assets.txt
+
       - name: Delete release assets
-        uses: JasonEtco/delete-release-assets@v0.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release_id: ${{ steps.get_release_id.outputs.release_id }}   
-          
-      - name: Build router configuration file
-        run: make
-      
+        run: |
+          while read asset_id; do
+            curl -X DELETE -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
+          done < assets.txt  
+
       - name: Create new release
         id: create_release
         uses: actions/create-release@v1
@@ -44,4 +56,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./routes4.conf
           asset_name: routes4.conf
-          asset_content_type: text/plain          
+          asset_content_type: text/plain      
