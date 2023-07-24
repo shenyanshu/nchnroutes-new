@@ -1,4 +1,4 @@
-name: Build and Publish Release
+name: Delete Archive Files
 
 on:
   push:
@@ -6,64 +6,17 @@ on:
       - main
 
 jobs:
-  build_and_publish:
+  delete_archive_files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Delete all release files
+      - name: Delete archive files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for release in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].id'); do
-            echo "Deleting files in release $release"
-            for asset_id in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$release/assets | jq -r '.[].id'); do
-              curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
-            done
-          done
-
-      - name: Delete source code archives
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          for release in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].id'); do
-            for asset in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$release/assets | jq -r '.[] | select(.name | endswith(".tar.gz") or endswith(".zip")) | .id'); do
-              curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$$asset_id"
-            done
-          done          
-
-
-      - name: Generate routes4.conf
-        run: |
-          # Generate routes4.conf file using make command
-          make
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          body: |
-            Release ${{ github.run_number }}
-          draft: false
-          prerelease: false
-
-      - name: Upload routes4.conf file
-        uses: actions/upload-artifact@v2
-        with:
-          name: routes4.conf
-          path: ./routes4.conf
-
-      - name: Attach routes4.conf to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./routes4.conf
-          asset_name: routes4.conf
-          asset_content_type: text/plain
+          # Delete all files in /archive/refs/tags/ directory
+          git rm -r --ignore-unmatch /archive/refs/tags/
+          git commit -m "Delete archive files"
+          git push
