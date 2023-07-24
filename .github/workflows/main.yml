@@ -54,5 +54,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./routes4.conf
-          asset_name: routes4.conf-${{ github.run_number }}
+          asset_name: routes4.conf
           asset_content_type: text/plain
