@@ -1,4 +1,4 @@
-name: Delete Archive Files
+name: Delete Source Code Files
 
 on:
   push:
@@ -6,17 +6,21 @@ on:
       - main
 
 jobs:
-  delete_archive_files:
+  delete_source_code_files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Delete archive files
+      - name: Delete source code files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Delete all files in /archive/refs/tags/ directory
-          git rm -r --ignore-unmatch /archive
-          git commit -m "Delete archive files"
-          git push
+          # Delete source code files from all releases
+          releases=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].id')
+          for release in $releases; do
+            assets=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$release/assets | jq -r '.[] | select(.name | endswith(".tar.gz") or endswith(".zip")) | .id')
+            for asset in $assets; do
+              curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset"
+            done
+          done
