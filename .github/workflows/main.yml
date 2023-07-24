@@ -17,6 +17,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Delete all files in /archive/refs/tags/ directory
-          git rm -r --ignore-unmatch /archive/refs/tags/
+          git rm -r --ignore-unmatch /releases
           git commit -m "Delete archive files"
           git push
