@@ -23,6 +23,17 @@ jobs:
             done
           done
 
+      - name: Delete source code archives
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for release in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].id'); do
+            for asset in $(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/$release/assets | jq -r '.[] | select(.name | endswith(".tar.gz") or endswith(".zip")) | .id'); do
+              curl --request DELETE --header "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset"
+            done
+          done          
+
+
       - name: Generate routes4.conf
         run: |
           # Generate routes4.conf file using make command
