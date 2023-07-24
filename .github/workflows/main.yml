@@ -10,15 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Setup Python
+      - name: Set up Python 3.x
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
 
-      - name: Build project
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y make
+
+      - name: Build router configuration file
         run: make
 
       - name: Create release
@@ -39,6 +43,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./routes4.conf
-          asset_name: routes4.conf
+          asset_path: ./router4.conf
+          asset_name: router4.conf
           asset_content_type: text/plain
