@@ -2,7 +2,7 @@ name: Delete All Releases
 
 on:
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '0 19 * * *'
 
 jobs:
   delete_all_releases:
