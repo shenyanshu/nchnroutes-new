@@ -1,6 +1,7 @@
 name: Delete All Releases
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 19 * * *'
 
