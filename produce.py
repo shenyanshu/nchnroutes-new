@@ -132,3 +132,4 @@ with open("routes4.conf", "w") as f:
 
 with open("routes6.conf", "w") as f:
     dump_bird(root_v6, f)
+    f.write('route fc00::/18 via "%s";\n' % args.next) # 单独写入静态路由
