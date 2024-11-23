@@ -39,6 +39,8 @@ def dump_bird(lst, f):
 
         elif not n.dead:
             f.write('route %s via "%s";\n' % (n.cidr, args.next))
+    # 多添加一行fakeip的数据
+    f.write('route 198.18.0.1/16 via "%s";\n' % args.next)
 
 RESERVED = [
     IPv4Network('0.0.0.0/8'),
