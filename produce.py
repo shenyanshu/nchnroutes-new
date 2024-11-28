@@ -7,7 +7,7 @@ import math
 parser = argparse.ArgumentParser(description='Generate non-China routes for BIRD.')
 parser.add_argument('--exclude', metavar='CIDR', type=str, nargs='*',
                     help='IPv4 ranges to exclude in CIDR format')
-parser.add_argument('--next', default="utun", metavar = "INTERFACE OR IP",
+parser.add_argument('--next', default="ens18", metavar = "INTERFACE OR IP",
                     help='next hop for where non-China IP address, this is usually the tunnel interface')
 parser.add_argument('--ipv4-list', choices=['apnic', 'ipip'], default=['apnic', 'ipip'], nargs='*',
                     help='IPv4 lists to use when subtracting China based IP, multiple lists can be used at the same time (default: apnic ipip)')
@@ -128,8 +128,6 @@ subtract_cidr(root_v6, RESERVED_V6)
 
 with open("routes4.conf", "w") as f:
     dump_bird(root, f)
-    f.write('route 198.18.0.0/16 via "%s";\n' % args.next)  # 单独写入静态路由
 
 with open("routes6.conf", "w") as f:
     dump_bird(root_v6, f)
-    f.write('route fc00::/18 via "%s";\n' % args.next) # 单独写入静态路由
