@@ -128,6 +128,9 @@ subtract_cidr(root_v6, RESERVED_V6)
 
 with open("routes4.conf", "w") as f:
     dump_bird(root, f)
+    f.write('route 198.18.0.0/16 via "%s";\n' % args.next)  # 单独写入静态路由
 
 with open("routes6.conf", "w") as f:
     dump_bird(root_v6, f)
+    f.write('route fc00::/18 via "%s";\n' % args.next) # 单独写入静态路由
+
